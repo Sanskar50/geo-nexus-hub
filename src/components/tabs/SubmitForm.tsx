@@ -1,193 +1,113 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, Send, CheckCircle } from 'lucide-react';
+import { MapPin, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const SubmitForm = () => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     location: '',
-    priority: '',
-    category: '',
-    coordinates: ''
+    type: ''
   });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
+    
     toast({
-      title: "Data Submitted Successfully",
-      description: "Your information has been processed and added to the system.",
+      title: "Report Submitted",
+      description: "Your city update has been submitted successfully.",
     });
 
-    // Reset form
     setFormData({
       title: '',
       description: '',
       location: '',
-      priority: '',
-      category: '',
-      coordinates: ''
+      type: ''
     });
-
-    setIsSubmitting(false);
   };
 
-  const isFormValid = formData.title && formData.description && formData.priority;
-
   return (
-    <div className="h-full flex flex-col">
-      <div className="mb-4">
-        <h3 className="text-lg font-medium mb-1">Submit Information</h3>
-        <p className="text-sm text-muted-foreground">
-          Add new data points to the system
-        </p>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="title" className="text-xs font-medium">Title</Label>
+          <Input
+            id="title"
+            placeholder="Brief description"
+            value={formData.title}
+            onChange={(e) => handleInputChange('title', e.target.value)}
+            className="bg-background/50 border-border/30 text-sm h-8"
+            required
+          />
+        </div>
 
-      <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              placeholder="Enter a descriptive title"
-              value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              className="bg-background"
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="description" className="text-xs font-medium">Description</Label>
+          <Textarea
+            id="description"
+            placeholder="Detailed description"
+            value={formData.description}
+            onChange={(e) => handleInputChange('description', e.target.value)}
+            className="bg-background/50 border-border/30 text-sm min-h-[60px] resize-none"
+            required
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
-            <Textarea
-              id="description"
-              placeholder="Provide detailed information..."
-              rows={3}
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              className="bg-background resize-none"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="priority">Priority *</Label>
-              <Select value={formData.priority} onValueChange={(value) => handleInputChange('priority', value)}>
-                <SelectTrigger className="bg-background">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                <SelectTrigger className="bg-background">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="incident">Incident</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="monitoring">Monitoring</SelectItem>
-                  <SelectItem value="update">Update</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location" className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              Location
-            </Label>
+        <div className="space-y-2">
+          <Label htmlFor="location" className="text-xs font-medium">Location</Label>
+          <div className="relative">
+            <MapPin className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
             <Input
               id="location"
-              placeholder="Building, room, or area name"
+              placeholder="Address or coordinates"
               value={formData.location}
               onChange={(e) => handleInputChange('location', e.target.value)}
-              className="bg-background"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="coordinates">Coordinates</Label>
-            <Input
-              id="coordinates"
-              placeholder="e.g., 40.7128, -74.0060"
-              value={formData.coordinates}
-              onChange={(e) => handleInputChange('coordinates', e.target.value)}
-              className="bg-background font-mono text-sm"
+              className="bg-background/50 border-border/30 text-sm h-8 pl-7"
+              required
             />
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col justify-end">
-          <div className="flex items-center gap-2 mb-4">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </span>
-          </div>
-
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Button 
-              type="submit" 
-              className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
-              disabled={!isFormValid || isSubmitting}
-            >
-              {isSubmitting ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="h-4 w-4 border-2 border-current border-t-transparent rounded-full"
-                />
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Submit Information
-                </>
-              )}
-            </Button>
-          </motion.div>
-
-          {!isFormValid && (
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              * Required fields must be filled
-            </p>
-          )}
+        <div className="space-y-2">
+          <Label className="text-xs font-medium">Type</Label>
+          <Select onValueChange={(value) => handleInputChange('type', value)} required>
+            <SelectTrigger className="bg-background/50 border-border/30 text-sm h-8">
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="flood">🌊 Flood</SelectItem>
+              <SelectItem value="traffic">🚦 Traffic</SelectItem>
+              <SelectItem value="general">📰 General News</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
+        <Button 
+          type="submit" 
+          size="sm"
+          className="w-full bg-gradient-primary hover:opacity-90 transition-opacity text-xs h-8"
+          disabled={!formData.title || !formData.description || !formData.location || !formData.type}
+        >
+          <Send className="h-3 w-3 mr-1" />
+          Submit Update
+        </Button>
       </form>
-    </div>
+    </motion.div>
   );
 };
 
